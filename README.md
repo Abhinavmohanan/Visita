@@ -46,10 +46,9 @@ Blockchain Implementation : If a user has connected their Metamask wallet to the
 *Flutter* : https://flutter.dev/  
 *State management using Bloc* : https://bloclibrary.dev/  
 *Maps API - Fleaflet* : https://docs.fleaflet.dev/  
-*Backend api endpoints* 
+*Backend api*
+<br>
 Made using expressjs and mongodb using mongoose package.
 <br>
-## Endpoints 
-- /user => see/register user
-- /posts => add/delete posts
-- /facilities => add/delete facilities
+API link - 
+https://visita-api.onrender.com/
