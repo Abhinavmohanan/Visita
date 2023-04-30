@@ -68,7 +68,7 @@ class _ImageUploadState extends State<ImageUpload> {
       var request = http.MultipartRequest("POST",
           Uri.parse("https://visita-api.onrender.com/api/v1/posts/$id"));
       request.files.add(http.MultipartFile.fromBytes(
-          'picture', File(imageFile!.path).readAsBytesSync(),
+          'image', File(imageFile!.path).readAsBytesSync(),
           filename: imageFile!.path));
       request.fields['userURL'] = firebaseUser.photoURL!;
       var res = await request.send();

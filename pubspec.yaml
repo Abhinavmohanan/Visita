@@ -60,6 +60,7 @@ dependencies:
   ionicons: ^0.2.2
   dio: ^5.1.1
   geocoder_buddy: ^1.0.1
+  geocoding: ^2.1.0
 
 flutter_launcher_icons:
   android: "launcher_icon"

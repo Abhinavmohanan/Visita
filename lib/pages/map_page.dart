@@ -30,7 +30,7 @@ class _GetHostState extends State<GetHost> {
   late LocationPermission permission;
   late Position position;
   LatLng? userLoc;
-  Marker? userPoint;
+  List<Marker> hostPoints = [];
   int prevval = 0;
   late StreamSubscription<Position> positionStream;
   TextEditingController query = TextEditingController();
@@ -49,8 +49,8 @@ class _GetHostState extends State<GetHost> {
     print(res.body);
     setState(() {
       mapData = jsonDecode(res.body);
-      if (mapData.length != 0) {
-        userPoint = Marker(
+      hostPoints.addAll(mapData.map<Marker>((marker) {
+        return (Marker(
             width: 120,
             height: 120,
             point: LatLng(double.parse(mapData[0]["lat"]),
@@ -59,7 +59,7 @@ class _GetHostState extends State<GetHost> {
                   onTap: () {
                     Navigator.of(context).push(MaterialPageRoute(
                         builder: (ctx) => HostDetail(
-                              mapData: mapData[0],
+                              mapData: marker,
                             )));
                   },
                   child: Column(children: [
@@ -67,10 +67,11 @@ class _GetHostState extends State<GetHost> {
                       Icons.location_on,
                       color: Colors.red,
                     ),
-                    Text("HOST 1")
+                    Text(marker["hostName"])
                   ]),
-                ));
-      }
+                )));
+      }));
+      print(hostPoints);
     });
   }
 
@@ -111,30 +112,21 @@ class _GetHostState extends State<GetHost> {
   getLocation() async {
     position = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
-    print(position.longitude); //Output: 80.24599079
-    print(position.latitude); //Output: 29.6593457
 
-    // userPoint = (mapData == null)
-    //     ? null
-    //     : Marker(
-    //         width: 120,
-    //         height: 120,
-    //         point: LatLng(mapData[0].lat, mapData[0].long),
-    //         builder: (ctx) => GestureDetector(
-    //               onTap: () {
-    //                 Navigator.of(context).push(MaterialPageRoute(
-    //                     builder: (ctx) => HostDetail(
-    //                           mapData: mapData,
-    //                         )));
-    //               },
-    //               child: Column(children: [
-    //                 Icon(
-    //                   Icons.location_on,
-    //                   color: Colors.red,
-    //                 ),
-    //                 Text("HOST 1")
-    //               ]),
-    //             ));
+    // hostPoints.add(Marker(
+    //     width: 120,
+    //     height: 120,
+    //     point: LatLng(position.latitude, position.longitude),
+    //     builder: (ctx) => GestureDetector(
+    //           onTap: () {},
+    //           child: Column(children: [
+    //             Icon(
+    //               Icons.location_on,
+    //               color: Colors.red,
+    //             ),
+    //             Text("You")
+    //           ]),
+    //         )));
 
     setState(() {
       userLoc = LatLng(position.latitude, position.longitude);
@@ -149,9 +141,6 @@ class _GetHostState extends State<GetHost> {
     StreamSubscription<Position> positionStream =
         Geolocator.getPositionStream(locationSettings: locationSettings)
             .listen((Position position) {
-      print(position.longitude); //Output: 80.24599079
-      print(position.latitude); //Output: 29.6593457
-
       setState(() {
         userLoc = LatLng(position.latitude, position.longitude);
       });
@@ -162,99 +151,130 @@ class _GetHostState extends State<GetHost> {
   Widget build(BuildContext context) {
     return userLoc == null
         ? const Center(child: CircularProgressIndicator())
-        : Stack(children: [
-            FlutterMap(
-              mapController: mapControl,
-              options: MapOptions(
-                center: userLoc,
-                zoom: 12,
-              ),
-              nonRotatedChildren: [
-                AttributionWidget.defaultWidget(
-                  source: 'OpenStreetMap contributors',
-                  onSourceTapped: null,
-                ),
-              ],
-              children: [
-                TileLayer(
-                  urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                  userAgentPackageName: 'com.example.app',
-                ),
-                userPoint == null
-                    ? Container()
-                    : MarkerLayer(
-                        markers: [userPoint!],
-                      )
-              ],
-            ),
-            Container(
-                child: SingleChildScrollView(
+        : Scaffold(
+            floatingActionButton: Container(
+              margin: EdgeInsets.only(bottom: 20),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  SizedBox(height: MediaQuery.of(context).viewPadding.top + 20),
-                  Container(
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12)),
-                    padding: EdgeInsets.all(17),
-                    margin: EdgeInsets.all(10),
-                    child: TextField(
-                      onChanged: (value) {
-                        if (value.length < prevval) {
-                          return;
-                        }
-                        getLocationSearch();
-                      },
-                      controller: query,
-                      style: TextStyle(fontSize: 15),
-                      decoration:
-                          InputDecoration.collapsed(hintText: 'Enter location'),
+                  InkWell(
+                    onTap: () {
+                      mapControl.move(
+                          LatLng(position.latitude, position.longitude), 12);
+                    },
+                    child: Icon(
+                      size: 40,
+                      Icons.my_location_outlined,
+                      color: Colors.black,
                     ),
                   ),
-                  data == null
-                      ? Container()
-                      : Container(
-                          padding: EdgeInsets.all(5),
-                          margin: EdgeInsets.all(10),
-                          height: data!.length * 45,
-                          child: ListView.builder(
-                              physics: BouncingScrollPhysics(),
-                              itemBuilder: (context, index) {
-                                return InkWell(
-                                  onTap: () {
-                                    setState(() {
-                                      userLoc = null;
-                                    });
-                                    setState(() {
-                                      query.text = '';
-
-                                      userLoc = LatLng(
-                                          double.parse(data![index].lat),
-                                          double.parse(data![index].lon));
-                                      mapControl.move(userLoc!, 12);
-                                      data = null;
-                                    });
-                                  },
-                                  child: Card(
-                                    elevation: 1,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          borderRadius:
-                                              BorderRadius.circular(12)),
-                                      padding: EdgeInsets.all(17),
-                                      margin: EdgeInsets.all(12),
-                                      child: Text(data![index].displayName),
-                                    ),
-                                  ),
-                                );
-                              },
-                              itemCount: data!.length),
-                        )
+                  InkWell(
+                    onTap: () {
+                      getHosts();
+                    },
+                    child: Icon(
+                      size: 40,
+                      Icons.refresh,
+                      color: Colors.black,
+                    ),
+                  ),
                 ],
               ),
-            )),
-          ]);
+            ),
+            body: Stack(children: [
+              FlutterMap(
+                mapController: mapControl,
+                options: MapOptions(
+                  center: userLoc,
+                  zoom: 12,
+                ),
+                nonRotatedChildren: [
+                  AttributionWidget.defaultWidget(
+                    source: 'OpenStreetMap contributors',
+                    onSourceTapped: null,
+                  ),
+                ],
+                children: [
+                  TileLayer(
+                    urlTemplate:
+                        'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    userAgentPackageName: 'com.example.app',
+                  ),
+                  MarkerLayer(
+                    markers: hostPoints,
+                  )
+                ],
+              ),
+              Container(
+                  child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    SizedBox(
+                        height: MediaQuery.of(context).viewPadding.top + 20),
+                    Container(
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12)),
+                      padding: EdgeInsets.all(17),
+                      margin: EdgeInsets.all(10),
+                      child: TextField(
+                        onChanged: (value) {
+                          if (value.length < prevval) {
+                            return;
+                          }
+                          getLocationSearch();
+                        },
+                        controller: query,
+                        style: TextStyle(fontSize: 15),
+                        decoration: InputDecoration.collapsed(
+                            hintText: 'Enter location'),
+                      ),
+                    ),
+                    data == null
+                        ? Container()
+                        : Container(
+                            padding: EdgeInsets.all(5),
+                            margin: EdgeInsets.all(10),
+                            height: data!.length * 45,
+                            child: ListView.builder(
+                                physics: BouncingScrollPhysics(),
+                                itemBuilder: (context, index) {
+                                  return InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        userLoc = null;
+                                      });
+                                      setState(() {
+                                        query.text = '';
+
+                                        userLoc = LatLng(
+                                            double.parse(data![index].lat),
+                                            double.parse(data![index].lon));
+                                        mapControl.move(userLoc!, 12);
+                                        data = null;
+                                      });
+                                    },
+                                    child: Card(
+                                      elevation: 1,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                            color: Colors.white,
+                                            borderRadius:
+                                                BorderRadius.circular(12)),
+                                        padding: EdgeInsets.all(17),
+                                        margin: EdgeInsets.all(12),
+                                        child: Text(data![index].displayName),
+                                      ),
+                                    ),
+                                  );
+                                },
+                                itemCount: data!.length),
+                          )
+                  ],
+                ),
+              )),
+            ]),
+          );
     ;
   }
 }

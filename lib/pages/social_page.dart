@@ -48,6 +48,7 @@ class _SocialPageState extends State<SocialPage> {
         .get(Uri.parse("https://visita-api.onrender.com/api/v1/posts/"));
     var posts = jsonDecode(response.body);
     setState(() {
+      print(posts["posts"]);
       postsList = posts["posts"];
     });
   }
@@ -90,36 +91,36 @@ class _SocialPageState extends State<SocialPage> {
   }
 
   Widget getBody() {
-    return postsList == null
-        ? Center(
-            child: CircularProgressIndicator(),
-          )
-        : SmartRefresher(
-            enablePullDown: true,
-            enablePullUp: true,
-            header: WaterDropHeader(),
-            footer: CustomFooter(builder: (context, mode) {
-              Widget body;
-              if (mode == LoadStatus.idle) {
-                body = Text("pull up load");
-              } else if (mode == LoadStatus.loading) {
-                body = CupertinoActivityIndicator();
-              } else if (mode == LoadStatus.failed) {
-                body = Text("Load Failed!Click retry!");
-              } else if (mode == LoadStatus.canLoading) {
-                body = Text("release to load more");
-              } else {
-                body = Text("No more Data");
-              }
-              return Container(
-                height: 55.0,
-                child: Center(child: body),
-              );
-            }),
-            onRefresh: _onRefresh,
-            onLoading: _onLoading,
-            controller: _refreshController,
-            child: SingleChildScrollView(
+    return SmartRefresher(
+      enablePullDown: true,
+      enablePullUp: true,
+      header: WaterDropHeader(),
+      footer: CustomFooter(builder: (context, mode) {
+        Widget body;
+        if (mode == LoadStatus.idle) {
+          body = Text("pull up load");
+        } else if (mode == LoadStatus.loading) {
+          body = CupertinoActivityIndicator();
+        } else if (mode == LoadStatus.failed) {
+          body = Text("Load Failed!Click retry!");
+        } else if (mode == LoadStatus.canLoading) {
+          body = Text("release to load more");
+        } else {
+          body = Text("No more Data");
+        }
+        return Container(
+          height: 55.0,
+          child: Center(child: body),
+        );
+      }),
+      onRefresh: _onRefresh,
+      onLoading: _onLoading,
+      controller: _refreshController,
+      child: postsList == null
+          ? Center(
+              child: CircularProgressIndicator(),
+            )
+          : SingleChildScrollView(
               child: Padding(
                 padding: const EdgeInsets.only(left: 25, right: 25),
                 child: Column(
@@ -201,7 +202,8 @@ class _SocialPageState extends State<SocialPage> {
                                               CircleAvatar(
                                                 backgroundImage: NetworkImage(
                                                     postsList[index]
-                                                        ['userURL']),
+                                                            ['userURL'] ??
+                                                        "https://st3.depositphotos.com/6672868/13701/v/450/depositphotos_137014128-stock-illustration-user-profile-icon.jpg"),
                                               ),
                                               SizedBox(
                                                 width: 12,
@@ -251,6 +253,6 @@ class _SocialPageState extends State<SocialPage> {
                 ),
               ),
             ),
-          );
+    );
   }
 }

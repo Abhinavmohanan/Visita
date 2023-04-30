@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_map/flutter_map.dart';
 import 'package:visita/constants.dart';
 import 'package:visita/model/user.dart';
 import 'package:visita/pages/home_page.dart';
+import 'package:visita/pages/host_detail.dart';
 import 'package:visita/pages/social_page.dart';
 import 'package:visita/pages/uploadImage.dart';
 import 'package:visita/services/helper.dart';
@@ -11,6 +15,8 @@ import 'package:visita/ui/auth/authentication_bloc.dart';
 import 'package:visita/ui/auth/welcome/welcome_screen.dart';
 import 'package:flutter_icons_null_safety/flutter_icons_null_safety.dart';
 import 'package:visita/theme/colors.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:http/http.dart' as http;
 import 'package:visita/pages/map_page.dart';
 import 'package:visita/pages/profile_page.dart';
 // import 'package:travel_app/pages/social_page.dart';
