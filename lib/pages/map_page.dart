@@ -45,30 +45,32 @@ class _GetHostState extends State<GetHost> {
 
   getHosts() async {
     var res = await http
-        .get(Uri.parse("http://192.168.137.1:4567/api/v1/facilities/"));
+        .get(Uri.parse("https://visita-api.onrender.com/api/v1/facilities/"));
     print(res.body);
     setState(() {
       mapData = jsonDecode(res.body);
-      userPoint = Marker(
-          width: 120,
-          height: 120,
-          point: LatLng(double.parse(mapData[0]["lat"]),
-              double.parse(mapData[0]["long"])),
-          builder: (ctx) => GestureDetector(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (ctx) => HostDetail(
-                            mapData: mapData[0],
-                          )));
-                },
-                child: Column(children: [
-                  Icon(
-                    Icons.location_on,
-                    color: Colors.red,
-                  ),
-                  Text("HOST 1")
-                ]),
-              ));
+      if (mapData.length != 0) {
+        userPoint = Marker(
+            width: 120,
+            height: 120,
+            point: LatLng(double.parse(mapData[0]["lat"]),
+                double.parse(mapData[0]["long"])),
+            builder: (ctx) => GestureDetector(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (ctx) => HostDetail(
+                              mapData: mapData[0],
+                            )));
+                  },
+                  child: Column(children: [
+                    Icon(
+                      Icons.location_on,
+                      color: Colors.red,
+                    ),
+                    Text("HOST 1")
+                  ]),
+                ));
+      }
     });
   }
 
@@ -158,7 +160,7 @@ class _GetHostState extends State<GetHost> {
 
   @override
   Widget build(BuildContext context) {
-    return userLoc == null || userPoint == null
+    return userLoc == null
         ? const Center(child: CircularProgressIndicator())
         : Stack(children: [
             FlutterMap(
@@ -178,9 +180,11 @@ class _GetHostState extends State<GetHost> {
                   urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
                   userAgentPackageName: 'com.example.app',
                 ),
-                MarkerLayer(
-                  markers: [userPoint!],
-                )
+                userPoint == null
+                    ? Container()
+                    : MarkerLayer(
+                        markers: [userPoint!],
+                      )
               ],
             ),
             Container(

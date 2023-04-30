@@ -173,7 +173,7 @@ class FireStoreUtils {
     String? token = idtoken.token;
     print(token);
     var response = await http.post(
-      Uri.parse("http://192.168.137.1:4567/api/v1/users/client/"),
+      Uri.parse("https://visita-api.onrender.com/api/v1/users/"),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(
           {"email": email, "name": displayName, "section": "client", "id": id}),

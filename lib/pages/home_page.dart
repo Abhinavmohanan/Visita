@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:visita/widgets/location_card.dart';
 import 'package:visita/widgets/nearby_places.dart';
 import 'package:visita/widgets/recommended_places.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:visita/widgets/tourist_places.dart';
 
 //toast message
@@ -12,6 +13,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    User? firebaseUser = FirebaseAuth.instance.currentUser;
     return Scaffold(
       appBar: AppBar(
         systemOverlayStyle: const SystemUiOverlayStyle(
@@ -30,7 +32,7 @@ class HomePage extends StatelessWidget {
           children: [
             const Text("Good Morning"),
             Text(
-              "Anish ",
+              "${firebaseUser!.displayName}",
               style: Theme.of(context).textTheme.labelMedium,
             ),
           ],

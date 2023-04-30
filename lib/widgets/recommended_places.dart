@@ -23,8 +23,8 @@ class _RecommendedPlacesState extends State<RecommendedPlaces> {
   }
 
   fetchRecommended() async {
-    var resp =
-        await http.get(Uri.parse("http://192.168.137.1:4567/api/v1/home"));
+    var resp = await http
+        .get(Uri.parse("https://visita-api.onrender.com/api/v1/home"));
     recommended = jsonDecode(resp.body)["data"]["recommendations"];
     print(recommended);
     setState(() {

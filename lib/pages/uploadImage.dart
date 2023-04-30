@@ -39,14 +39,14 @@ class _ImageUploadState extends State<ImageUpload> {
     User? firebaseUser = FirebaseAuth.instance.currentUser;
     try {
       print("Uploading Image");
-      var response =
-          await http.post(Uri.parse("http://192.168.137.1:4567/api/v1/posts/"),
-              headers: {"Content-Type": "application/json"},
-              body: jsonEncode({
-                "id": firebaseUser!.uid,
-                "text": location.text,
-                "postedBy": firebaseUser.displayName
-              }));
+      var response = await http.post(
+          Uri.parse("https://visita-api.onrender.com/api/v1/posts/"),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            "id": firebaseUser!.uid,
+            "text": location.text,
+            "postedBy": firebaseUser.displayName
+          }));
       print(response.body);
       String id = jsonDecode(response.body)['_id'];
       // final response3 = await Dio().post(
@@ -65,8 +65,8 @@ class _ImageUploadState extends State<ImageUpload> {
       // String id = jsonDecode(response.body)['_id'];
       print("Sending second resp");
 
-      var request = http.MultipartRequest(
-          "POST", Uri.parse("http://192.168.137.1:4567/api/v1/posts/$id"));
+      var request = http.MultipartRequest("POST",
+          Uri.parse("https://visita-api.onrender.com/api/v1/posts/$id"));
       request.files.add(http.MultipartFile.fromBytes(
           'picture', File(imageFile!.path).readAsBytesSync(),
           filename: imageFile!.path));

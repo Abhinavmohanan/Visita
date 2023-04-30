@@ -44,8 +44,8 @@ class _SocialPageState extends State<SocialPage> {
 
 //To fetch post from API
   fetchPosts() async {
-    var response =
-        await http.get(Uri.parse("http://192.168.137.1:4567/api/v1/posts/"));
+    var response = await http
+        .get(Uri.parse("https://visita-api.onrender.com/api/v1/posts/"));
     var posts = jsonDecode(response.body);
     setState(() {
       postsList = posts["posts"];

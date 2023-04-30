@@ -70,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
   getPosts() async {
     User? firebaseUser = FirebaseAuth.instance.currentUser;
     var response = await http.get(Uri.parse(
-        "http://192.168.137.1:4567/api/v1/posts/${firebaseUser?.uid}"));
+        "https://visita-api.onrender.com/api/v1/posts/${firebaseUser?.uid}"));
     setState(() {
       mePostList = jsonDecode(response.body)["posts"];
     });
