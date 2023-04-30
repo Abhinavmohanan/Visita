@@ -21,8 +21,9 @@ Getting Started:
 5. Save and organize travel plans, itineraries, and recommendations.
 6. Get real-time updates and notifications about your travel plans.
 
-We hope you enjoy using the Travel Companion app and that it helps you create unforgettable travel experiences!
+We hope you enjoy using the Travel Companion app and that it helps you create unforgettable travel experiences!  
 
+Try out Visita : https://bit.ly/VisitaAPK
 
 ## Working of Visita:
 
